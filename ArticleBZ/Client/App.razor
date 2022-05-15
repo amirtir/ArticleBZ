@@ -1,6 +1,15 @@
-﻿<Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
+﻿<CascadingAuthenticationState>
+<Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <Authorizing>
+                در حال بررسی...
+            </Authorizing>
+            <NotAuthorized>
+                شما احراز هویت نشدید.
+            </NotAuthorized>
+        </AuthorizeRouteView>
+       
     </Found>
     <NotFound>
         <LayoutView Layout="@typeof(MainLayout)">
@@ -8,3 +17,4 @@
         </LayoutView>
     </NotFound>
 </Router>
+</CascadingAuthenticationState>

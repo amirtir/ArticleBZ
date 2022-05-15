@@ -1,35 +1,117 @@
 ﻿@page "/Register"
+@using ArticleBZ.Client.Repositories
+@using ArticleBZ.Client.Services
+@using ArticleBZ.Shared.DTOs
+@using ArticleBZ.Shared.Models
+@inject IUserService _userservice
+
+
+<div>
+     <table>
+              <tr>
+        <td>نام</td>
+         <td>نام خانوادگی</td>
+          <td>ایمیل</td>
+           <td>بیوگرافی</td>
+        </tr>
+    @foreach (var item in users)
+   {
+         
+        <tr>
+        <th>  @item.Name</th>
+         <th>  @item.LastName </th>
+         <th> @item.Email</th>
+         <th> @item.Bio</th>
+        </tr>
+       
+   }
+    </table>
+</div>
 <div class="main_content sidebar_right pb-50">
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-xl-6 col-md-10">
-                            <div class="login_wrap widget-taber-content shadow p-30 background-white border-radius-5">
-                                <div class="padding_eight_all bg-white" dir="rtl">
-                                    <div class="heading_s1">
-                                        <h3 class="mb-30 text-center">ثبت نام</h3>
-                                    </div>
-                                    <form method="post">
-                                        <div class="form-group">
-                                            <input type="text" required="" class="form-control" name="email" placeholder="ایمیل">
-                                        </div>
-                                        <div class="form-group">
-                                            <input class="form-control" required="" type="password" name="password" placeholder="کلمه عبور">
-                                        </div>
-                                        <div class="form-group">
-                                            <input class="form-control" required="" type="password" name="password" placeholder="تکرار کلمه عبور">
-                                        </div>
-                                        <div class="form-group">
-                                            <button type="submit" class="btn btn-fill-out btn-block" name="login">ثبت نام</button>
-                                        </div>
-                                    </form>
-                                    <div class="text-muted text-center">قبلا ثبت نام کرده اید ؟ <NavLink href="/login">ورود به حساب</NavLink></div>
-                                </div>
-                            </div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-6 col-md-10">
+                <div class="login_wrap widget-taber-content shadow p-30 background-white border-radius-5">
+                    <div class="padding_eight_all bg-white" dir="rtl">
+                        <div class="heading_s1">
+                            <h3 class="mb-30 text-center">ثبت نام</h3>
+                           
                         </div>
+                        
+                            <EditForm Model=@user OnValidSubmit=@Create>
+                                <div class="form-group">  <InputText class="form-control" placeholder="نام" @bind-Value=@user.Name></InputText> </div>
+                                <div class="form-group">    <InputText class="form-control" placeholder="نام خانوادگی" @bind-Value=@user.LastName></InputText></div>
+                                <div class="form-group"> <InputText class="form-control" placeholder="ایمیل" @bind-Value=@user.Email></InputText></div>
+                                <div class="form-group">  <InputText class="form-control" placeholder="رمز عبور" @bind-Value=@user.Password></InputText></div>
+                                <div class="form-group">  <InputText class="form-control" placeholder="تکرار رمز عبور" @bind-Value=@user.RePassword></InputText></div>
+                                <div class="form-group">  <InputText class="form-control" placeholder="شغل" @bind-Value=user.Job></InputText></div>
+                                <div class="form-group"> <InputText class="form-control" height=50px placeholder="بیوگرافی" @bind-Value=user.Bio></InputText></div>
+
+
+
+                             
+                                <div class="form-group">
+                                    
+                                <button type="submit" class="btn btn-fill-out btn-block" name="Register">ثبت نام</button>
+                            </div>
+                                <DataAnnotationsValidator></DataAnnotationsValidator>
+                                <ValidationSummary></ValidationSummary>
+                            </EditForm>
+                       
+
+                        <div class="text-muted text-center">قبلا ثبت نام کرده اید ؟ <NavLink href="/login">ورود به حساب</NavLink></div>
+                     @*    @{
+                                if (status==true)
+                                {
+                                <div class="primary-color"> ثبت نام شما با موفقیت انجام شد. </div>
+                            }
+                        }*@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
+@{
+
+    if (result != null)
+    {
+        <table>
+        <tr>
+        <td>نام</td>
+         <td>نام خانوادگی</td>
+          <td>ایمیل</td>
+           <td>بیوگرافی</td>
+        </tr>
+
+        <tr>
+        <th>  @result.Name</th>
+         <th>  @result.LastName </th>
+         <th> @result.Email</th>
+         <th> @result.Bio</th>
+        </tr>
+        </table>
+    }}
 @code {
+    [Parameter]
+    public List<User> users { get; set; } = new List<User>();
+    public UserVM user { get; set; } = new UserVM();
+    [Parameter]
+    public User result { get; set; } 
 
+    protected override async void OnInitialized()
+    {
+
+        users= await _userservice.GetUsers();
+        StateHasChanged();
+    }
+
+    private async void Create()
+    {
+        result= await _userservice.CreateUser(user);
+                
+    }
+
+   
 }

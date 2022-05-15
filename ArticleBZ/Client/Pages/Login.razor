@@ -1,4 +1,9 @@
 ﻿@page "/Login"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IUserService _userservice
+@inject AuthenticationStateProvider _jwtService
+@inject IJSRuntime _js;
+
 <div class="main_content sidebar_right pb-50">
     <div class="container">
         <div class="row justify-content-center">
@@ -8,18 +13,25 @@
                         <div class="heading_s1">
                             <h3 class="mb-30 text-center">ورود</h3>
                         </div>
-                        <form method="post">
-                            <div class="form-group">
-                                <input type="text" required="" class="form-control" name="email" placeholder="ایمیل">
+                       
+                      
+                        <EditForm Model=@loginVm OnValidSubmit=@login >
+                              <div class="form-group">
+                                <InputText @bind-Value=@loginVm.Email  class="form-control" name="email" placeholder="ایمیل"> </InputText>
                             </div>
-                            <div class="form-group">
-                                <input class="form-control" required="" type="password" name="password" placeholder="کلمه عبور">
+                              <div class="form-group">
+                                <InputText @bind-Value=@loginVm.Password  class="form-control" name="Password" placeholder="رمز عبور"> </InputText>
                             </div>
-                                      
-                            <div class="form-group">
+                             <div class="form-group">
                                 <button type="submit" class="btn btn-fill-out btn-block" name="login">ورود</button>
                             </div>
-                        </form>
+                            @if (jwtToken != null)
+                            {
+                                <div> @jwtToken</div>
+                            }
+                            <div > <ValidationSummary></ValidationSummary></div>
+                           
+                        </EditForm>
                         <div class="text-muted text-center">ثبت نام نکرده اید ؟ <navlink href="/register">ثبت نام</navlink></div>
                     </div>
                 </div>
@@ -28,5 +40,28 @@
     </div>
 </div>
 @code {
+    [Parameter]
+    public string jwtToken { get; set; }
 
+    [Parameter]
+    public LoginVM loginVm { get; set; } = new LoginVM();
+
+    [CascadingParameter]
+    public Task<AuthenticationState> authenticationState { get; set; }
+
+    async void login(){
+
+
+        var token= await  _userservice.LoginUser(loginVm);
+
+        await _js.SetItem("token", token.token);
+        await _js.SetUser("User",loginVm);
+
+        var auth = await authenticationState;
+        if (token != null)
+        {
+      
+        }
+
+    }
 }

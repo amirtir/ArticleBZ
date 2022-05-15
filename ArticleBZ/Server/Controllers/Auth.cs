@@ -22,6 +22,7 @@ namespace ArticleBZ.Server.Controllers
         }
 
         [HttpPost]
+        [Route("Login")]
         public IActionResult Login([FromBody] LoginVM login)
         {
             if (_userRepository.IsUserExsit(login))
@@ -36,7 +37,9 @@ namespace ArticleBZ.Server.Controllers
                     signingCredentials: sigingCredentils,
                 claims: new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name,login.UserName),
+                   
+                    new Claim(ClaimTypes.Email,login.Email),
+                    new Claim(ClaimTypes.Name,login.Email),
                     new Claim(ClaimTypes.Role,"Admin")
                 }
                     );
